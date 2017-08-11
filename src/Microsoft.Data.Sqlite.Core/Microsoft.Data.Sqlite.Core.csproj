@@ -29,7 +29,7 @@ Microsoft.Data.Sqlite.SqliteTransaction</Description>
 
   <ItemGroup>
     <PackageReference Include="SQLitePCLRaw.core" Version="1.1.8" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" PrivateAssets="All" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" Condition="'$(TargetFramework)' != 'net45'" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" Condition="'$(TargetFramework)' != 'net45'" />
