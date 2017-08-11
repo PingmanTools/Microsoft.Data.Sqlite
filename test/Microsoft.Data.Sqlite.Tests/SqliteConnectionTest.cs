@@ -111,8 +111,12 @@ namespace Microsoft.Data.Sqlite
             using (var connection = new SqliteConnection("Data Source=local.db"))
             {
                 connection.Open();
-
-                Assert.Equal(Path.Combine(AppContext.BaseDirectory, "local.db"), connection.DataSource);
+#if NET45
+                var dataDirectory = Directory.GetCurrentDirectory();
+#else
+                var dataDirectory = AppContext.BaseDirectory;
+#endif
+                Assert.Equal(Path.Combine(dataDirectory, "local.db"), connection.DataSource);
             }
         }
 

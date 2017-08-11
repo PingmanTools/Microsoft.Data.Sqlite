@@ -372,5 +372,12 @@ namespace Microsoft.Data.Sqlite
 
             return index;
         }
+
+#if NET45
+        /// <summary>Gets or sets... Not implemented</summary>
+        /// <value>Not implemented</value>
+        public override DataRowVersion SourceVersion { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+#endif
+
     }
 }
