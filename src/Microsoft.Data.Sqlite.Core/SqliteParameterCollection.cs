@@ -39,6 +39,20 @@ namespace Microsoft.Data.Sqlite
         public override object SyncRoot
             => ((ICollection)_parameters).SyncRoot;
 
+#if NET45
+        /// <summary>Gets a value indicating whether... not implemented</summary>
+        /// <value>Not implemented</value>
+        public override bool IsFixedSize => throw new NotImplementedException();
+
+        /// <summary>Gets a value indicating whether... not implemented</summary>
+        /// <value>Not implemented</value>
+        public override bool IsReadOnly => throw new NotImplementedException();
+
+        /// <summary>Gets a value indicating whether... not implemented</summary>
+        /// <value>Not implemented</value>
+        public override bool IsSynchronized => throw new NotImplementedException();
+#endif
+
         /// <summary>
         /// Gets or sets the parameter at the specified index.
         /// </summary>

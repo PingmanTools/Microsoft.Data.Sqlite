@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
@@ -159,11 +160,19 @@ namespace Microsoft.Data.Sqlite
             return true;
         }
 
+#if NET45
         /// <summary>
         /// Closes the data reader.
         /// </summary>
         public override void Close()
             => Dispose(true);
+#else
+        /// <summary>
+        /// Closes the data reader.
+        /// </summary>
+        public void Close()
+            => Dispose(true);
+#endif
 
         /// <summary>
         /// Releases any resources used by the data reader and closes it.
@@ -720,5 +729,14 @@ namespace Microsoft.Data.Sqlite
 
             return new DateTime(year, month, day, hour, minute, second, millisecond);
         }
+
+#if NET45
+        /// <summary>Not implemented</summary>
+        /// <returns>Returns.. not implemented</returns>
+        public override DataTable GetSchemaTable()
+        {
+            throw new NotImplementedException();
+        }
+#endif
     }
 }

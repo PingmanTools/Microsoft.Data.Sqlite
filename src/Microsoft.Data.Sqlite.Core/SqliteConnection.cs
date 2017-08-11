@@ -196,7 +196,11 @@ namespace Microsoft.Data.Sqlite
                     break;
             }
 
+#if NET45
             var dataDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
+#else
+            var dataDirectory = AppContext.BaseDirectory;
+#endif
             if (!string.IsNullOrEmpty(dataDirectory)
                 && (flags & raw.SQLITE_OPEN_URI) == 0
                 && !filename.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
