@@ -306,6 +306,8 @@ namespace Microsoft.Data.Sqlite
                         : Resources.TransactionConnectionMismatch);
             }
 
+            DisposePreparedStatements();
+
             // This is not a guarantee. SQLITE_BUSY can still be thrown before the command timeout.
             // This sets a timeout handler but this can be cleared by concurrent commands.
             raw.sqlite3_busy_timeout(_connection.Handle, CommandTimeout * 1000);
