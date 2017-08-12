@@ -138,48 +138,39 @@ namespace Microsoft.Data.Sqlite
                 {
                     command.CommandText = "CREATE TABLE Data (ID integer PRIMARY KEY, Value integer);";
                     command.ExecuteNonQuery();
-                }
 
-                using (var transaction = connection.BeginTransaction())
-                {
-                    using (var command = connection.CreateCommand())
+                    command.CommandText = "INSERT INTO Data (Value) VALUES (@value);";
+                    var valueParam = new SqliteParameter { ParameterName = "@value" };
+                    command.Parameters.Add(valueParam);
+
+                    for (var i = 0; i < INSERTS; i++)
                     {
-                        command.Transaction = transaction;
+                        // Clearing the CommandText property resets the prepared statements
+                        // as a workaround to the current bug. Neither of these CommandText
+                        // setters should be necessary.
+                        command.CommandText = string.Empty;
                         command.CommandText = "INSERT INTO Data (Value) VALUES (@value);";
 
-                        var valueParam = new SqliteParameter { ParameterName = "@value" };
-                        command.Parameters.Add(valueParam);
-
-                        for (var i = 0; i < INSERTS; i++)
-                        {
-                            // Clearing the CommandText property resets the prepared statements
-                            // as a workaround to the current bug. Neither of these CommandText
-                            // setters should be necessary.
-                            command.CommandText = string.Empty;
-                            command.CommandText = "INSERT INTO Data (Value) VALUES (@value);";
-
-                            valueParam.Value = i;
-                            Assert.Equal(1, command.ExecuteNonQuery());
-                        }
+                        valueParam.Value = i;
+                        Assert.Equal(1, command.ExecuteNonQuery());
                     }
-                    transaction.Commit();
-                }
 
-                using (var command = connection.CreateCommand())
-                {
                     command.CommandText = "SELECT Value FROM Data";
                     using (var reader = command.ExecuteReader())
                     {
                         for (var i = 0; i < INSERTS; i++)
                         {
                             Assert.True(reader.Read());
+                            // Without the CommandText reset workaround above, this fails
+                            // when always returning the first value set to the "valueParam"
+                            // SqliteParameter.
                             Assert.Equal(i, reader.GetInt32(0));
                         }
                     }
                 }
             }
         }
-
+        
 
         [Fact]
         public void Prepare_throws_when_no_connection()
