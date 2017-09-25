@@ -26,6 +26,13 @@ namespace Microsoft.Data.Sqlite
         private ConnectionState _state;
         private sqlite3 _db;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether or not all commands will be automatically tracked
+        /// and disposed when the connection closes.
+        /// </summary>
+        /// <value>true or false</value>
+        public bool AutoDisposeCommandsOnClose { get; set; } = true;
+
         static SqliteConnection()
             => BundleInitializer.Initialize();
 
@@ -228,14 +235,16 @@ namespace Microsoft.Data.Sqlite
 
             Transaction?.Dispose();
 
-            foreach (var reference in _commands)
+            if (AutoDisposeCommandsOnClose)
             {
-                if (reference.TryGetTarget(out var command))
+                foreach (var reference in _commands)
                 {
-                    command.Dispose();
+                    if (reference.TryGetTarget(out var command))
+                    {
+                        command.Dispose();
+                    }
                 }
             }
-
             _commands.Clear();
 
             _db.Dispose2();
@@ -278,15 +287,23 @@ namespace Microsoft.Data.Sqlite
             => CreateCommand();
 
         internal void AddCommand(SqliteCommand command)
-            => _commands.Add(new WeakReference<SqliteCommand>(command));
+        {
+            if (AutoDisposeCommandsOnClose)
+            {
+                _commands.Add(new WeakReference<SqliteCommand>(command));
+            }
+        }
 
         internal void RemoveCommand(SqliteCommand command)
         {
-            for (var i = _commands.Count - 1; i >= 0; i--)
+            if (AutoDisposeCommandsOnClose)
             {
-                if (!_commands[i].TryGetTarget(out var item) || item == command)
+                for (var i = _commands.Count - 1; i >= 0; i--)
                 {
-                    _commands.RemoveAt(i);
+                    if (!_commands[i].TryGetTarget(out var item) || item == command)
+                    {
+                        _commands.RemoveAt(i);
+                    }
                 }
             }
         }
